@@ -1,0 +1,44 @@
+#!/bin/bash
+echo "Updating Durky, please wait."
+
+# 1. Descartar los cambios locales
+git reset --hard HEAD
+
+# 2. Actualizar el repositorio desde GitHub
+git fetch --all
+git reset --hard origin/main  
+
+# 3. Cambia al directorio del backend
+cd backend
+
+# 4. Instala las dependencias del backend
+npm install
+
+# 5. Elimina el directorio de distribución del backend
+rm -rf dist
+
+# 6. Compila el backend
+npm run build
+
+# 7. Aplica las migraciones a la base de datos
+npx sequelize db:migrate
+
+# 8. Inserta los datos iniciales en la base de datos
+npx sequelize db:seed
+
+# 9. Cambia al directorio del frontend
+cd ../frontend
+
+# 10. Instala las dependencias del frontend
+npm install
+
+# 11. Elimina el directorio de construcción del frontend
+rm -rf build
+
+# 12. Compila el frontend
+npm run build
+
+# 13. Reinicia todos los procesos gestionados por PM2
+pm2 restart all
+
+echo "Update finished. Enjoy!"
